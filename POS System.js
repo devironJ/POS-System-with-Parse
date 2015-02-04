@@ -42,10 +42,12 @@ function Collection(productList, name) {
 function Category(name) {
     var categoryName = name;
     var category = [];
+
+    //adds a new collection which a category name is automatically assigned based on your category constructor
     this.addNewCollection = function (arrCollection, collectionName) {
-        var Product = Parse.Object.extend("Product");
-        var product = new Product();
         for(i=0;i < arrCollection.length;i++){
+            var Product = Parse.Object.extend("Product");
+            var product = new Product();
             product.save({name: arrCollection[i].name, price: arrCollection[i].price, keywords: arrCollection[i].keywords,
                 reviews: arrCollection[i].reviews, collection: collectionName, category: categoryName}, {
                 success: function(product){
@@ -58,7 +60,7 @@ function Category(name) {
         }
     };
 
-    //finds the items under the collection in Parse, then assigns the category name specified
+    //finds the items under the collection in Parse database, then assigns the category name specified
     this.categorizeCollection = function (arrCollectionName){
         var Product = Parse.Object.extend("Product");
         var query = new Parse.Query(Product);
@@ -101,6 +103,55 @@ function Category(name) {
 
 }
 
+function Inventory(shopName) {
+    this.name = shopName;
+    var store = [];
+
+    //adds inventory property to given category of products
+    this.addCategoryToInventory = function (categoryName) {
+        store.push(category);
+    };
+    this.viewCategoryList = function () {
+        for (i = 0; i < store.length; i++) {
+            console.log(store[i].name);
+        }
+    };
+
+    //pass category name, reference the name to the category
+    this.viewStoreAspect = function (categoryName) {
+        for (i = 0; i < store.length; i++) {
+            if (categoryName = store[i].name) {
+                console.log(store[i].getCategory());
+            }
+        }
+    };
+    var productReference = function (itemName) {
+        for (i = 0; i < store.length; i++) {
+            for (j = 0; j < store[i].getCategory().length; j++) {
+                for (k = 0; k < store[i].getCategory()[j].length; k++) {
+                    if (store[i].getCategory()[j][k]["name"] == itemName) {
+                        return (store[i].getCategory()[j][k])
+                    }
+                }
+            }
+        }
+    };
+    this.priceCheck = function (itemName) {
+        //console.log("The price of " + itemName + " is: " + productReference(itemName)["price"]);
+        return productReference(itemName)["price"]
+    };
+    this.changeProductPrice = function (itemName, price) {
+        productReference(itemName)["price"] = price;
+        return productReference(itemName)["price"]
+        //console.log("You changed the price of " + itemName + " from " + originalPrice + " to " + price);
+    };
+    this.seeReviews = function (itemName) {
+        console.log(productReference(itemName)["reviews"]);
+    };
+    this.addReview = function(itemName, review){
+        productReference(itemName)["reviews"] += review;
+    }
+}
 //Create a few examples by objects of products, add to list
 var sprite = {
     name: "sprite",
@@ -122,14 +173,13 @@ drink.addProduct("sunkist", 1.50);
 
 //Adding foods
 
-var foodsList = [];
-var food = new Collection(foodsList, "food");
-
-food.addProduct("cheerios", 2.95);
-food.addProduct("turkey", 5.95);
+var food = [{name: "cheerios", price: 2.95}, {name: "turkey", price: 5.95}];
 
 var foodAndDrink = new Category("Food and Drink");
+
+foodAndDrink.addNewCollection(food, "food");
 foodAndDrink.categorizeCollection("drink");
+
 
 //
 //drinks.addReview("arizona iced tea", "good for the price");
@@ -209,53 +259,6 @@ foodAndDrink.categorizeCollection("drink");
 //console.log(foodAndDrink.printCollection(drinks));
 //console.log(foodAndDrink.getCategory());
 
-    function Inventory(shopName) {
-        this.name = shopName;
-        var store = [];
-        this.addCategory = function (category) {
-            store.push(category);
-        };
-        this.viewCategoryList = function () {
-            for (i = 0; i < store.length; i++) {
-                console.log(store[i].name);
-            }
-        };
-
-        //pass category name, reference the name to the category
-        this.viewStoreAspect = function (categoryName) {
-            for (i = 0; i < store.length; i++) {
-                if (categoryName = store[i].name) {
-                    console.log(store[i].getCategory());
-                }
-            }
-        };
-        var productReference = function (itemName) {
-            for (i = 0; i < store.length; i++) {
-                for (j = 0; j < store[i].getCategory().length; j++) {
-                    for (k = 0; k < store[i].getCategory()[j].length; k++) {
-                        if (store[i].getCategory()[j][k]["name"] == itemName) {
-                            return (store[i].getCategory()[j][k])
-                        }
-                    }
-                }
-            }
-        };
-        this.priceCheck = function (itemName) {
-            //console.log("The price of " + itemName + " is: " + productReference(itemName)["price"]);
-            return productReference(itemName)["price"]
-        };
-        this.changeProductPrice = function (itemName, price) {
-            productReference(itemName)["price"] = price;
-            return productReference(itemName)["price"]
-            //console.log("You changed the price of " + itemName + " from " + originalPrice + " to " + price);
-        };
-        this.seeReviews = function (itemName) {
-            console.log(productReference(itemName)["reviews"]);
-        };
-        this.addReview = function(itemName, review){
-            productReference(itemName)["reviews"] += review;
-        }
-    }
 
     var billyBob = new Inventory("Billy Bob's General Store");
     billyBob.addCategory(foodAndDrink);
