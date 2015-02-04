@@ -87,7 +87,7 @@ function Category(name) {
 
 function Inventory(shopName) {
     var shopName = shopName;
-
+    var objectPrice = 0;
     //adds inventory property to given category of products
     this.addCategoryToInventory = function (categoryName) {
         var Product = Parse.Object.extend("Product");
@@ -113,18 +113,20 @@ function Inventory(shopName) {
     };
     this.priceCheck = function(itemName) {
         var Product = Parse.Object.extend("Product");
-        var objectPrice = 0;
         var query = new Parse.Query(Product);
         query.equalTo("name", itemName);
         query.first({
             success: function(object){
-                return object.get("price");
+                objectPrice = object.get("price");
             },
             error: function(error) {
                 console.log("Error!!!");
             }
         });
     };
+    this.returnPrice = function (){
+        return objectPrice
+    }
 }
 
 //Create a few examples by objects of products, add to list
@@ -232,7 +234,8 @@ var output = document.getElementById("divOutput");
 var userInputProductHold = "";
 document.getElementById("search").onclick = function (){
     var userInputProduct = document.getElementById("itemInput").value;
-    var productPrice = billyBobIrvine.priceCheck(userInputProduct);
+    billyBobIrvine.priceCheck(userInputProduct);
+    var productPrice = billyBobIrvine.returnPrice();
         output.innerHTML += '<p>' + "The price for " + userInputProduct + " is: $" + productPrice + '</p>';
 
     //else {
