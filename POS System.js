@@ -113,7 +113,6 @@ function Inventory(shopName) {
     this.price=0;
 
     this.priceCheck = function(itemName) {
-
         var Product = Parse.Object.extend("Product");
         var query = new Parse.Query(Product);
         query.equalTo("name", itemName);
@@ -129,6 +128,17 @@ function Inventory(shopName) {
 
     };
 
+    this.changeProductPrice = function(itemName,changedPrice){
+        var Product = Parse.Object.extend("Product");
+        var query = new Parse.Query(Product);
+        query.equalTo("name",itemName);
+        query.first({
+            success: function(object){
+                object.set("price",changedPrice);
+                object.save();
+            }
+        });
+    };
 }
 
 //Create a few examples by objects of products, add to list
@@ -236,10 +246,13 @@ $("#search").on("click",function(){
     billyBobIrvine.priceCheck(userInputProduct);
 });
 
-//$("#changePrice").on("click", function(){
-//    var userInputProduct = $("#itemInput").val();
-//    var userInputPrice = $("#priceChange").val();
-//});
+$("#changePrice").on("click", function(){
+    var userInputProduct = $("#itemInput").val();
+    var userInputPrice = parseInt($("#priceChange").val(),10);
+    billyBobIrvine.changeProductPrice(userInputProduct, userInputPrice);
+    $("#divOutput").append('<p>' + "The price of " + userInputProduct + " has been changed to $" + userInputPrice)
+});
+
 
 ////HTML for check prices
 //var output = document.getElementById("divOutput");
