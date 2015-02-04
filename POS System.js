@@ -87,7 +87,6 @@ function Category(name) {
 
 function Inventory(shopName) {
     var shopName = shopName;
-    var objectPrice = 0;
     //adds inventory property to given category of products
     this.addCategoryToInventory = function (categoryName) {
         var Product = Parse.Object.extend("Product");
@@ -111,22 +110,25 @@ function Inventory(shopName) {
             }
         });
     };
+    this.price=0;
+
     this.priceCheck = function(itemName) {
+
         var Product = Parse.Object.extend("Product");
         var query = new Parse.Query(Product);
         query.equalTo("name", itemName);
         query.first({
             success: function(object){
-                objectPrice = object.get("price");
+               this.price=(object.get("price"));
+                $("#divOutput").append('<p>' + "The price for " + itemName + " is: $" + this.price + '</p>')
             },
             error: function(error) {
                 console.log("Error!!!");
             }
         });
+
     };
-    this.returnPrice = function (){
-        return objectPrice
-    }
+
 }
 
 //Create a few examples by objects of products, add to list
@@ -228,21 +230,29 @@ billyBobIrvine.addCategoryToInventory("Food and Drink");
 //Adam.addReview("turkey", "this turkey sucks");
 //Adam.checkCategory("Food and drink");
 
-
-//HTML for edit-prices
-var output = document.getElementById("divOutput");
-var userInputProductHold = "";
-document.getElementById("search").onclick = function (){
-    var userInputProduct = document.getElementById("itemInput").value;
+//jQuery
+$("#search").on("click",function(){
+    var userInputProduct = $("#itemInput").val();
     billyBobIrvine.priceCheck(userInputProduct);
-    var productPrice = billyBobIrvine.returnPrice();
-        output.innerHTML += '<p>' + "The price for " + userInputProduct + " is: $" + productPrice + '</p>';
+});
 
-    //else {
-    //    output.innerHTML += '<p>' + "Item cannot be found" + "</p>";
-    //}
-};
+//$("#changePrice").on("click", function(){
+//    var userInputProduct = $("#itemInput").val();
+//    var userInputPrice = $("#priceChange").val();
+//});
 
+////HTML for check prices
+//var output = document.getElementById("divOutput");
+//var userInputProductHold = "";
+//document.getElementById("search").onclick = function (){
+//    var userInputProduct = document.getElementById("itemInput").value;
+//    billyBobIrvine.priceCheck(userInputProduct);
+//    var productPrice = billyBobIrvine.returnPrice();
+//        output.innerHTML += '<p>' + "The price for " + userInputProduct + " is: $" + productPrice + '</p>';
+//};
+
+
+////HTML for editing prices
 //document.getElementById("changePrice").onclick = function(){
 //    var userInputProduct = document.getElementById("itemInput").value;
 //    var userInputPrice = document.getElementById("priceChange").value;
