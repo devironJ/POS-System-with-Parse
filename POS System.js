@@ -104,53 +104,71 @@ function Category(name) {
 }
 
 function Inventory(shopName) {
-    this.name = shopName;
-    var store = [];
+    var shopName = shopName;
 
     //adds inventory property to given category of products
     this.addCategoryToInventory = function (categoryName) {
-        store.push(category);
-    };
-    this.viewCategoryList = function () {
-        for (i = 0; i < store.length; i++) {
-            console.log(store[i].name);
-        }
-    };
-
-    //pass category name, reference the name to the category
-    this.viewStoreAspect = function (categoryName) {
-        for (i = 0; i < store.length; i++) {
-            if (categoryName = store[i].name) {
-                console.log(store[i].getCategory());
-            }
-        }
-    };
-    var productReference = function (itemName) {
-        for (i = 0; i < store.length; i++) {
-            for (j = 0; j < store[i].getCategory().length; j++) {
-                for (k = 0; k < store[i].getCategory()[j].length; k++) {
-                    if (store[i].getCategory()[j][k]["name"] == itemName) {
-                        return (store[i].getCategory()[j][k])
-                    }
+        var Product = Parse.Object.extend("Product");
+        var query = new Parse.Query(Product);
+        query.equalTo("category", categoryName);
+        query.find({
+            success: function(results){
+                console.log("Successfully retrieved " + results.length + " parts of a category.");
+                for(i = 0; i < results.length; i++){
+                    var object = results[i];
+                    object.save(null, {
+                        success: function(object) {
+                            object.set("inventory", shopName);
+                            object.save();
+                        }
+                    });
                 }
+            },
+            error: function(error){
+                console.log("Error!!!!");
             }
-        }
+        });
     };
-    this.priceCheck = function (itemName) {
-        //console.log("The price of " + itemName + " is: " + productReference(itemName)["price"]);
-        return productReference(itemName)["price"]
-    };
-    this.changeProductPrice = function (itemName, price) {
-        productReference(itemName)["price"] = price;
-        return productReference(itemName)["price"]
-        //console.log("You changed the price of " + itemName + " from " + originalPrice + " to " + price);
-    };
-    this.seeReviews = function (itemName) {
-        console.log(productReference(itemName)["reviews"]);
-    };
-    this.addReview = function(itemName, review){
-        productReference(itemName)["reviews"] += review;
-    }
+    //this.viewCategoryList = function () {
+    //    for (i = 0; i < store.length; i++) {
+    //        console.log(store[i].name);
+    //    }
+    //};
+    //
+    ////pass category name, reference the name to the category
+    //this.viewStoreAspect = function (categoryName) {
+    //    for (i = 0; i < store.length; i++) {
+    //        if (categoryName = store[i].name) {
+    //            console.log(store[i].getCategory());
+    //        }
+    //    }
+    //};
+    //var productReference = function (itemName) {
+    //    for (i = 0; i < store.length; i++) {
+    //        for (j = 0; j < store[i].getCategory().length; j++) {
+    //            for (k = 0; k < store[i].getCategory()[j].length; k++) {
+    //                if (store[i].getCategory()[j][k]["name"] == itemName) {
+    //                    return (store[i].getCategory()[j][k])
+    //                }
+    //            }
+    //        }
+    //    }
+    //};
+    //this.priceCheck = function (itemName) {
+    //    //console.log("The price of " + itemName + " is: " + productReference(itemName)["price"]);
+    //    return productReference(itemName)["price"]
+    //};
+    //this.changeProductPrice = function (itemName, price) {
+    //    productReference(itemName)["price"] = price;
+    //    return productReference(itemName)["price"]
+    //    //console.log("You changed the price of " + itemName + " from " + originalPrice + " to " + price);
+    //};
+    //this.seeReviews = function (itemName) {
+    //    console.log(productReference(itemName)["reviews"]);
+    //};
+    //this.addReview = function(itemName, review){
+    //    productReference(itemName)["reviews"] += review;
+    //}
 }
 //Create a few examples by objects of products, add to list
 var sprite = {
@@ -180,6 +198,8 @@ var foodAndDrink = new Category("Food and Drink");
 foodAndDrink.addNewCollection(food, "food");
 foodAndDrink.categorizeCollection("drink");
 
+var billyBobIrvine = new Inventory("Billy Bob's General Store Irvine");
+billyBobIrvine.addCategoryToInventory("Food and Drink");
 
 //
 //drinks.addReview("arizona iced tea", "good for the price");
