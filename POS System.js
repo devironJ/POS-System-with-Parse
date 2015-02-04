@@ -15,7 +15,6 @@ function Collection(productList, name) {
             success: function (product) {
                 console.log(name +" created with objectid: " + product.id);
             },
-
             error: function (product) {
                 alert("Failed to create new object, error code: " + error.message);
             }
@@ -84,23 +83,6 @@ function Category(name) {
         });
     };
 
-    ////private function that tells the position of the collection passed as an argument
-    //var findCollection = function (collectionName) {
-    //    for (i = 0; i < collectionNames.length; i++) {
-    //        if (collectionName = collectionNames[i]) {
-    //            return i
-    //        }
-    //    }
-    //};
-    ////returns the entire category
-    //this.getCategory = function () {
-    //    return category
-    //};
-    ////given the collection name, will only print out the collection given
-    //this.printCollection = function (collectionName) {
-    //    return category[findCollection(collectionName)]
-    //};
-
 }
 
 function Inventory(shopName) {
@@ -112,64 +94,39 @@ function Inventory(shopName) {
         var query = new Parse.Query(Product);
         query.equalTo("category", categoryName);
         query.find({
-            success: function(results){
+            success: function (results) {
                 console.log("Successfully retrieved " + results.length + " parts of a category.");
-                for(i = 0; i < results.length; i++){
+                for (i = 0; i < results.length; i++) {
                     var object = results[i];
                     object.save(null, {
-                        success: function(object) {
+                        success: function (object) {
                             object.set("inventory", shopName);
                             object.save();
                         }
                     });
                 }
             },
-            error: function(error){
+            error: function (error) {
                 console.log("Error!!!!");
             }
         });
     };
-    //this.viewCategoryList = function () {
-    //    for (i = 0; i < store.length; i++) {
-    //        console.log(store[i].name);
-    //    }
-    //};
-    //
-    ////pass category name, reference the name to the category
-    //this.viewStoreAspect = function (categoryName) {
-    //    for (i = 0; i < store.length; i++) {
-    //        if (categoryName = store[i].name) {
-    //            console.log(store[i].getCategory());
-    //        }
-    //    }
-    //};
-    //var productReference = function (itemName) {
-    //    for (i = 0; i < store.length; i++) {
-    //        for (j = 0; j < store[i].getCategory().length; j++) {
-    //            for (k = 0; k < store[i].getCategory()[j].length; k++) {
-    //                if (store[i].getCategory()[j][k]["name"] == itemName) {
-    //                    return (store[i].getCategory()[j][k])
-    //                }
-    //            }
-    //        }
-    //    }
-    //};
-    //this.priceCheck = function (itemName) {
-    //    //console.log("The price of " + itemName + " is: " + productReference(itemName)["price"]);
-    //    return productReference(itemName)["price"]
-    //};
-    //this.changeProductPrice = function (itemName, price) {
-    //    productReference(itemName)["price"] = price;
-    //    return productReference(itemName)["price"]
-    //    //console.log("You changed the price of " + itemName + " from " + originalPrice + " to " + price);
-    //};
-    //this.seeReviews = function (itemName) {
-    //    console.log(productReference(itemName)["reviews"]);
-    //};
-    //this.addReview = function(itemName, review){
-    //    productReference(itemName)["reviews"] += review;
-    //}
+    this.priceCheck = function(itemName) {
+        var Product = Parse.Object.extend("Product");
+        var objectPrice = 0;
+        var query = new Parse.Query(Product);
+        query.equalTo("name", itemName);
+        query.first({
+            success: function(object){
+                return object.get("price");
+            },
+            error: function(error) {
+                console.log("Error!!!");
+            }
+        });
+    };
 }
+
 //Create a few examples by objects of products, add to list
 var sprite = {
     name: "sprite",
@@ -201,11 +158,98 @@ foodAndDrink.categorizeCollection("drink");
 var billyBobIrvine = new Inventory("Billy Bob's General Store Irvine");
 billyBobIrvine.addCategoryToInventory("Food and Drink");
 
+////create User class, make a prototype of user of methods that all employees have access to
+//function User(name, password) {
+//    this.name = name;
+//    var password = password;
+//}
 //
-//drinks.addReview("arizona iced tea", "good for the price");
-////console.log(drinks.checkPrice("bud light"));
-//drinks.updatePrice("bud light", 3.00);
-////console.log(drinks.getCollection());
+//User.prototype.listCategories = function () {
+//    billyBob.viewCategoryList();
+//};
+//
+//User.prototype.checkCategory = function (categoryName) {
+//    billyBob.viewStoreAspect(categoryName);
+//};
+//
+//User.prototype.priceCheck = function (itemName) {
+////needs to take in item name, and find the collection list it belongs to
+//    billyBob.priceCheck(itemName);
+//};
+//
+//User.prototype.seeReviews = function (itemName) {
+//    billyBob.seeReviews(itemName);
+//};
+//
+//function StoreManager(name, password) {
+////inherits constructor from User
+//    User.apply(this, arguments);
+//    this.changeProductPrice = function (itemName, price) {
+//        billyBob.changeProductPrice(itemName, price);
+//    }
+//}
+//
+//StoreManager.prototype = Object.create(User.prototype);
+//
+//var Sylvester = new StoreManager("Sylvester", "tweety");
+
+//Sylvester.listCategories();
+//Sylvester.checkCategory("Food and drink");
+//Sylvester.priceCheck("turkey");
+//Sylvester.changeProductPrice("turkey", 6.95);
+//Sylvester.priceCheck("turkey");
+//Sylvester.seeReviews("sprite");
+//
+//function Employee(name, password) {
+//    User.apply(this, arguments);
+//}
+//
+//Employee.prototype = Object.create(User.prototype);
+//Employee.prototype.changeProductPrice = function () {
+//    console.log("You do not have permission to do that, ask a store manager");
+//};
+//
+//var Devon = new Employee("Devon", "abc123");
+//Devon.priceCheck("sprite");
+//Devon.changeProductPrice("sprite", .25);
+
+//function Customer(name){
+//    this.name = name;
+//    User.apply(this, arguments);
+//    this.addReview = function(itemName, review){
+//        billyBob.addReview(itemName, review);
+//    }
+//}
+//Customer.prototype = Object.create(User.prototype);
+//
+//var Adam = new Customer("Adam");
+//Adam.addReview("turkey", "this turkey sucks");
+//Adam.checkCategory("Food and drink");
+
+
+//HTML for edit-prices
+var output = document.getElementById("divOutput");
+var userInputProductHold = "";
+document.getElementById("search").onclick = function (){
+    var userInputProduct = document.getElementById("itemInput").value;
+    var productPrice = billyBobIrvine.priceCheck(userInputProduct);
+        output.innerHTML += '<p>' + "The price for " + userInputProduct + " is: $" + productPrice + '</p>';
+
+    //else {
+    //    output.innerHTML += '<p>' + "Item cannot be found" + "</p>";
+    //}
+};
+
+//document.getElementById("changePrice").onclick = function(){
+//    var userInputProduct = document.getElementById("itemInput").value;
+//    var userInputPrice = document.getElementById("priceChange").value;
+//    if(billyBob.changeProductPrice(userInputProduct,userInputPrice)){
+//        output.innerHTML += '<p>' + "The price of " + userInputProduct + " has been changed to $" + userInputPrice
+//    }
+//    else{
+//        output.innerHTML = '<p>' + "Please enter a valid price and/or product" + '</p>'
+//    }
+//};
 
 /*// creates an instance for the given category
 
@@ -283,73 +327,6 @@ billyBobIrvine.addCategoryToInventory("Food and Drink");
     var billyBob = new Inventory("Billy Bob's General Store");
     billyBob.addCategory(foodAndDrink);
 
-//create User class, make a prototype of user of methods that all employees have access to
-    function User(name, password) {
-        this.name = name;
-        var password = password;
-    }
-
-    User.prototype.listCategories = function () {
-        billyBob.viewCategoryList();
-    };
-
-    User.prototype.checkCategory = function (categoryName) {
-        billyBob.viewStoreAspect(categoryName);
-    };
-
-    User.prototype.priceCheck = function (itemName) {
-        //needs to take in item name, and find the collection list it belongs to
-        billyBob.priceCheck(itemName);
-    };
-
-    User.prototype.seeReviews = function (itemName) {
-        billyBob.seeReviews(itemName);
-    };
-
-    function StoreManager(name, password) {
-        //inherits constructor from User
-        User.apply(this, arguments);
-        this.changeProductPrice = function (itemName, price) {
-            billyBob.changeProductPrice(itemName, price);
-        }
-    }
-
-    StoreManager.prototype = Object.create(User.prototype);
-
-    var Sylvester = new StoreManager("Sylvester", "tweety");
-
-    //Sylvester.listCategories();
-    //Sylvester.checkCategory("Food and drink");
-    //Sylvester.priceCheck("turkey");
-    //Sylvester.changeProductPrice("turkey", 6.95);
-    //Sylvester.priceCheck("turkey");
-    //Sylvester.seeReviews("sprite");
-
-    function Employee(name, password) {
-        User.apply(this, arguments);
-    }
-
-    Employee.prototype = Object.create(User.prototype);
-    Employee.prototype.changeProductPrice = function () {
-        console.log("You do not have permission to do that, ask a store manager");
-    };
-
-    var Devon = new Employee("Devon", "abc123");
-    Devon.priceCheck("sprite");
-    Devon.changeProductPrice("sprite", .25);
-
-    function Customer(name){
-        this.name = name;
-        User.apply(this, arguments);
-        this.addReview = function(itemName, review){
-            billyBob.addReview(itemName, review);
-        }
-    }
-Customer.prototype = Object.create(User.prototype);
-
-var Adam = new Customer("Adam");
-Adam.addReview("turkey", "this turkey sucks");
-Adam.checkCategory("Food and drink");
 
 //<=== HTML Starts Here ===>
 //document.getElementById("user").textContent = Sylvester.name;
@@ -357,28 +334,6 @@ Adam.checkCategory("Food and drink");
 
 
 
-//HTML for edit-prices
-var output = document.getElementById("divOutput");
-var userInputProductHold = "";
-document.getElementById("search").onclick = function (){
-    var userInputProduct = document.getElementById("itemInput").value;
-    userInputProductHold = userInputProduct;
-    if(billyBob.priceCheck(userInputProduct)){
-        output.innerHTML += '<p>' + "The price for " + userInputProduct + " is: $" + billyBob.priceCheck(userInputProduct) + '</p>';
-    }
-    else {
-        output.innerHTML += '<p>' + "Item cannot be found" + "</p>";
-    }
-};
 
-document.getElementById("changePrice").onclick = function(){
-    var userInputProduct = document.getElementById("itemInput").value;
-    var userInputPrice = document.getElementById("priceChange").value;
-    if(billyBob.changeProductPrice(userInputProduct,userInputPrice)){
-        output.innerHTML += '<p>' + "The price of " + userInputProduct + " has been changed to $" + userInputPrice
-    }
-    else{
-        output.innerHTML = '<p>' + "Please enter a valid price and/or product" + '</p>'
-    }
-};*/
+*/
 
