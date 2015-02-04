@@ -39,6 +39,68 @@ function Collection(productList, name) {
     addList(collectionList);
 }
 
+function Category(name) {
+    var categoryName = name;
+    var category = [];
+    this.addNewCollection = function (arrCollection, collectionName) {
+        var Product = Parse.Object.extend("Product");
+        var product = new Product();
+        for(i=0;i < arrCollection.length;i++){
+            product.save({name: arrCollection[i].name, price: arrCollection[i].price, keywords: arrCollection[i].keywords,
+                reviews: arrCollection[i].reviews, collection: collectionName, category: categoryName}, {
+                success: function(product){
+                    console.log(product +" created with objectid: " + product.id);
+                },
+                error: function(product){
+                    alert("Failed to create new object, error code: " + error.message);
+                }
+            });
+        }
+    };
+
+    //finds the items under the collection in Parse, then assigns the category name specified
+    this.categorizeCollection = function (arrCollectionName){
+        var Product = Parse.Object.extend("Product");
+        var query = new Parse.Query(Product);
+        query.equalTo("collection", arrCollectionName);
+        query.find({
+            success: function(results){
+                console.log("Successfully retrieved " + results.length + " parts of a collection.");
+                for(i = 0; i < results.length; i++){
+                    var object = results[i];
+                    object.save(null, {
+                        success: function(object) {
+                            object.set("category", categoryName);
+                            object.save();
+                        }
+                    });
+                }
+            },
+            error: function(error){
+                console.log("Error!!!!");
+            }
+        });
+    };
+
+    ////private function that tells the position of the collection passed as an argument
+    //var findCollection = function (collectionName) {
+    //    for (i = 0; i < collectionNames.length; i++) {
+    //        if (collectionName = collectionNames[i]) {
+    //            return i
+    //        }
+    //    }
+    //};
+    ////returns the entire category
+    //this.getCategory = function () {
+    //    return category
+    //};
+    ////given the collection name, will only print out the collection given
+    //this.printCollection = function (collectionName) {
+    //    return category[findCollection(collectionName)]
+    //};
+
+}
+
 //Create a few examples by objects of products, add to list
 var sprite = {
     name: "sprite",
@@ -52,20 +114,22 @@ var drinksList = [];
 drinksList.push(sprite);
 
 //Create a new Collection in which the list of drinks will be that new collection, adds Drinks to collection property
-var drinks = new Collection(drinksList, "Drinks");
+var drink = new Collection(drinksList, "drink");
 
 //Adding two products
-drinks.addProduct("arizona iced tea", 1.00);
-drinks.addProduct("sunkist", 1.50);
+drink.addProduct("arizona iced tea", 1.00);
+drink.addProduct("sunkist", 1.50);
 
 //Adding foods
 
 var foodsList = [];
-var food = new Collection(foodsList, "Food");
+var food = new Collection(foodsList, "food");
 
 food.addProduct("cheerios", 2.95);
 food.addProduct("turkey", 5.95);
 
+var foodAndDrink = new Category("Food and Drink");
+foodAndDrink.categorizeCollection("drink");
 
 //
 //drinks.addReview("arizona iced tea", "good for the price");
@@ -138,34 +202,6 @@ food.addProduct("turkey", 5.95);
 
 //console.log(foods.getCollection());
 
-
-    function Category(name) {
-        this.name = name;
-        var category = [];
-        var collectionNames = [];
-        this.addCollection = function (arrCollection) {
-            category.push(arrCollection.getCollection());
-            collectionNames.push(arrCollection.toString());
-        };
-
-        //private function that tells the position of the collection passed as an argument
-        var findCollection = function (collectionName) {
-            for (i = 0; i < collectionNames.length; i++) {
-                if (collectionName = collectionNames[i]) {
-                    return i
-                }
-            }
-        };
-        //returns the entire category
-        this.getCategory = function () {
-            return category
-        };
-        //given the collection name, will only print out the collection given
-        this.printCollection = function (collectionName) {
-            return category[findCollection(collectionName)]
-        };
-
-    }
 
     var foodAndDrink = new Category("Food and Drink");
     foodAndDrink.addCollection(foods);
