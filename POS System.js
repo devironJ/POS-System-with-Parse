@@ -87,6 +87,12 @@ function Category(name) {
 
 function Inventory(shopName) {
     var shopName = shopName;
+    this.store ="";
+    this.category ="";
+    this.name = "";
+    this.price = 0;
+    this.keywords = [];
+    this.reviews = [];
     //adds inventory property to given category of products
     this.addCategoryToInventory = function (categoryName) {
         var Product = Parse.Object.extend("Product");
@@ -110,7 +116,6 @@ function Inventory(shopName) {
             }
         });
     };
-    this.price=0;
 
     this.priceCheck = function(itemName) {
         var Product = Parse.Object.extend("Product");
@@ -139,6 +144,41 @@ function Inventory(shopName) {
             }
         });
     };
+
+    this.searchInventory = function(userOption, userSearchInput){
+        var Product = Parse.Object.extend("Product");
+        var query = new Parse.Query(Product);
+        query.equalTo(userOption, userSearchInput);
+        query.find({
+            success: function (results) {
+                console.log("Successfully retrieved " + results.length + " item(s)");
+                for (i = 0; i < results.length; i++) {
+                    this.store = results[i].get("inventory");
+                    alert("store: " + this.store);
+                    this.category = results[i].get("category");
+                    alert("categ: " + this.category);
+                    this.name = results[i].get("name");
+                    alert("name: " + this.name);
+                    this.price = results[i].get("price");
+                    alert("price: " + this.price);
+                    this.keywords = results[i].get("keywords");
+                    alert("keywords: " + this.keywords);
+                    this.reviews = results[i].get("reviews");
+                    alert("reviews: " + this.reviews);
+
+                    $(".store").append('<p>' + this.store + '</p>');
+                    $(".category").append('<p>' + this.category + '</p>');
+                    $(".name").append('<p>' + this.name + '</p>');
+                    $(".price").append('<p>' + this.price + '</p>');
+                    $(".keywords").append('<p>' + this.keywords + '</p>');
+                    $(".reviews").append('<p>' + this.reviews + '</p>');
+                }
+            },
+            error: function (error) {
+                console.log("Error!!!!");
+            }
+        });
+    }
 }
 
 //Create a few examples by objects of products, add to list
@@ -241,6 +281,19 @@ billyBobIrvine.addCategoryToInventory("Food and Drink");
 //Adam.checkCategory("Food and drink");
 
 //jQuery
+$("#searchInventoryButton").on("click",function(){
+    var userOption = $("#optionSelection").val();
+    var userSearchInput = $("#searchInventory").val();
+    alert(userSearchInput);
+    if(userOption.toLowerCase() == "price"){
+        userOption = parseInt(userOption, 10)
+        billyBobIrvine.searchInventory(userOption, userSearchInput)
+    }
+    else{
+        billyBobIrvine.searchInventory(userOption, userSearchInput)
+    }
+
+});
 $("#search").on("click",function(){
     var userInputProduct = $("#itemInput").val();
     billyBobIrvine.priceCheck(userInputProduct);
