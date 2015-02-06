@@ -69,12 +69,8 @@ function Category(name) {
                 console.log("Successfully retrieved " + results.length + " parts of a collection.");
                 for(i = 0; i < results.length; i++){
                     var object = results[i];
-                    object.save(null, {
-                        success: function(object) {
-                            object.set("category", categoryName);
-                            object.save();
-                        }
-                    });
+                        object.set("category", categoryName);
+                        object.save();
                 }
             },
             error: function(error){
@@ -103,12 +99,8 @@ function Inventory(shopName) {
                 console.log("Successfully retrieved " + results.length + " parts of a category.");
                 for (i = 0; i < results.length; i++) {
                     var object = results[i];
-                    object.save(null, {
-                        success: function (object) {
-                            object.set("inventory", shopName);
-                            object.save();
-                        }
-                    });
+                        object.set("inventory", shopName);
+                        object.save();
                 }
             },
             error: function (error) {
